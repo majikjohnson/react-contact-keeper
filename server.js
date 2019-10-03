@@ -5,6 +5,7 @@ const connectDB = require('./config/db');
 connectDB();
 
 const app = express();
+app.use(express.json({extended: false}))
 
 app.get('/', (req, res) => res.json({msg: "Welcome to Contact Keeper API"}));
 
