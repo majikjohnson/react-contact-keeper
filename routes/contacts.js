@@ -22,7 +22,27 @@ router.get('/', auth, async (req, res) => {
 // @ROUTE   POST /api/contacts
 // @DESC    Creates a new contacts
 // @ACCESS  private
-router.post('/', (req, res) => res.send('Create new contact'));
+router.post('/', [auth, [
+    check('name', 'Name cannot be empty').not().isEmpty()
+]], async (req, res) => {
+    const {name, email, phone, type} = req.body;
+
+    try {
+        const newContact = new Contact({
+            name,
+            email,
+            phone,
+            type,
+            user: req.user.id
+        });
+        const contact = await newContact.save();
+        res.json(contact);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({msg: 'Internal Server Error'});
+    }
+});
 
 // @ROUTE   PUT /api/contacts
 // @DESC    Updates a contact
