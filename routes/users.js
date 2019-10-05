@@ -24,8 +24,9 @@ async (req, res) => {
     const { name, email, password } = req.body;
 
     try {
-        User.findOne({email});
-
+        const existingUser = await User.findOne({email});
+        if (existingUser) return res.status(400).json({msg: 'User already exists in database'});
+        
         let user = new User({
             name,
             email,
@@ -46,8 +47,6 @@ async (req, res) => {
             if(err) throw err;
             res.json({token});
         });
-
-
 
     } catch (error) {
         console.error(error);

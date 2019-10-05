@@ -13,7 +13,7 @@ const connectDB = async () => {
         });
         console.log("Connected to DB");
     } catch (error) {
-        console.error("DB Connection Failed");
+        console.error(error);
         process.exit(1);
     }
 };
