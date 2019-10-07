@@ -3,27 +3,24 @@ const app = require('../../../app');
 const mongoMemSvrHelper = require('../../support/mongoMemSvrHelper');
 const userTestData = require('../../fixtures/user.data');
 
-describe('User routes', () => {
+describe('Auth routes', () => {
 	let mongoServer;
 
 	before(async () => {
 		mongoServer = await mongoMemSvrHelper.startServer();
+		mongoMemSvrHelper.insertUser(userTestData.validUser);
 	});
 
 	after(() => {
 		mongoMemSvrHelper.stopServer(mongoServer);
 	});
 
-	afterEach(() => {
-		mongoMemSvrHelper.removeAllUsers();
-	});
-
-	it('should allow the user to register', async () => {
-		const { name, email, password } = userTestData.validUser;
+	it('should allow user to log in successfully', async () => {
+		const { email, password } = userTestData.validUser;
 		await request(app)
-			.post('/api/users/')
+			.post('/api/auth/')
 			.set('Content-Type', 'application/json')
-			.send({ name, email, password })
+			.send({ email, password })
 			.expect(200)
 			.expect(res => {
 				const token = res.body.token;
@@ -36,25 +33,25 @@ describe('User routes', () => {
 			});
 	});
 
-	it('should not allow a duplicate user to register', async () => {
-		const { name, email, password } = userTestData.validUser;
-		await mongoMemSvrHelper.insertUser(userTestData.validUser);
+	it('should not allow login if user does not exist', async () => {
+		const { email, password } = userTestData.unregisteredUser;
+		const expectedErrMsg = "User doesn't exist";
 		await request(app)
-			.post('/api/users/')
-			.set('Content-Type', 'application/json')
-			.send({ name, email, password })
-			.expect(400, {
-				msg: 'User already exists in database'
-			});
-	});
-
-	it('should return an error if "name" is missing', async () => {
-		const { email, password } = userTestData.validUser;
-		const expectedErrMsg = 'Name is required';
-		await request(app)
-			.post('/api/users/')
+			.post('/api/auth/')
 			.set('Content-Type', 'application/json')
 			.send({ email, password })
+			.expect(400, {
+				msg: expectedErrMsg
+			});
+	});
+
+	it('should not allow login if email address is not provided', async () => {
+		const { password } = userTestData.validUser;
+		const expectedErrMsg = 'Please use a valid email address';
+		await request(app)
+			.post('/api/auth/')
+			.set('Content-Type', 'application/json')
+			.send({ password })
 			.expect(400)
 			.expect(res => {
 				const msg = res.body.error[0].msg;
@@ -70,14 +67,26 @@ describe('User routes', () => {
 			});
 	});
 
-	it('should return an error if "password" is missing', async () => {
-		const { name, email } = userTestData.validUser;
-		const expectedErrMsg =
-			'Please enter a password with 6 or more charaters';
+	it('should not allow login if password is incorrect', async () => {
+		const { email } = userTestData.validUser;
+		const password = 'BadPassword';
+		const expectedErrMsg = 'Incorrect password';
 		await request(app)
-			.post('/api/users/')
+			.post('/api/auth/')
 			.set('Content-Type', 'application/json')
-			.send({ name, email })
+			.send({ email, password })
+			.expect(400, {
+				msg: expectedErrMsg
+			});
+	});
+
+	it('should not allow login if password is not provided', async () => {
+		const { email } = userTestData.validUser;
+		const expectedErrMsg = 'Please enter a password';
+		await request(app)
+			.post('/api/auth/')
+			.set('Content-Type', 'application/json')
+			.send({ email })
 			.expect(400)
 			.expect(res => {
 				const msg = res.body.error[0].msg;
@@ -93,36 +102,11 @@ describe('User routes', () => {
 			});
 	});
 
-	it('should return an error if "password" is less than 6 characters', async () => {
-		const { name, email, password } = userTestData.tooShortPassword;
-		const expectedErrMsg =
-			'Please enter a password with 6 or more charaters';
+	it('should not allow login if no credentials are provided', async () => {
+		const expectedErrMsg = 'Please use a valid email address';
 		await request(app)
-			.post('/api/users/')
+			.post('/api/auth/')
 			.set('Content-Type', 'application/json')
-			.send({ name, email, password })
-			.expect(400)
-			.expect(res => {
-				const msg = res.body.error[0].msg;
-				if (msg !== expectedErrMsg) {
-					throw new Error(
-						'response does not contain the correct error message' +
-							'\n\tExpected: ' +
-							expectedErrMsg +
-							'\n\tGot: ' +
-							msg
-					);
-				}
-			});
-	});
-
-	it('should return an error if "email" format is invalid', async () => {
-		const { name, email, password } = userTestData.badEmail;
-		const expectedErrMsg = 'Please include a valid email';
-		await request(app)
-			.post('/api/users/')
-			.set('Content-Type', 'application/json')
-			.send({ name, email, password })
 			.expect(400)
 			.expect(res => {
 				const msg = res.body.error[0].msg;
