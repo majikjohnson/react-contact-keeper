@@ -25,6 +25,12 @@ router.get('/', auth, async (req, res) => {
 router.post('/', [auth, [
     check('name', 'Name cannot be empty').not().isEmpty()
 ]], async (req, res) => {
+
+    const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ error: errors.array() });
+	}
+
     const {name, email, phone, type} = req.body;
 
     try {
