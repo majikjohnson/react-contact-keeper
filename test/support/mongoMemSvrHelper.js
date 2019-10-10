@@ -1,12 +1,15 @@
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const User = require('../../models/User');
+const Contact = require('../../models/Contact');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const config = require('config');
 
 const opts = {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
-	useCreateIndex: true
+	useCreateIndex: true,
 };
 
 module.exports = {
@@ -33,6 +36,7 @@ module.exports = {
 			user.password = await bcrypt.hash(user.password, salt);
 			const newUser = new User(user);
 			await newUser.save();
+			return newUser.toJSON();
 		} catch (error) {
 			console.error(error);
 			throw error;
@@ -51,9 +55,79 @@ module.exports = {
 		}
 	},
 
+	logInUser: async user => {
+		try {
+			const exisingUser = await module.exports.findUser(user);
+
+			const payload = {
+				user: {
+					id: exisingUser.id,
+				},
+			};
+
+			const token = jwt.sign(payload, config.get('jwtSecret'), {
+				expiresIn: 3600,
+			});
+
+			return token;
+		} catch (error) {
+			console.error(error);
+			throw error;
+		}
+	},
+
 	removeAllUsers: async () => {
 		try {
 			await User.deleteMany();
+		} catch (error) {
+			console.error(error);
+			throw error;
+		}
+	},
+
+	insertContacts: async (id, contactsData) => {
+		const allContactData = [].concat(contactsData);
+		//let contactModels = [];
+		let dbPromises = [];
+
+		allContactData.forEach((contactData) => {
+
+			const {name, email, phone, type} = contactData;
+
+			const currentContact = new Contact({
+				name,
+				email,
+				phone,
+				type,
+				user: id
+			});
+			dbPromises.push(currentContact.save());
+			
+		});
+		await Promise.all(dbPromises);
+		//console.log(contactModels);
+		//return contactModels;
+		// DO WE NEED THIS LINE?
+		//const myContacts = await Contact.find({user: id});
+		//console.log({myContacts});
+	},
+
+	getContacts: async (id) => {
+		try {
+			
+			const contacts = await Contact.find({user: id}).sort({date: -1});
+			//console.log({contacts});
+			//console.log(id);
+			return contacts;
+		} catch (error) {
+			console.error(error);
+			throw error;
+		}
+	},
+
+	removeAllContacts: async () => {
+		try {
+			await Contact.deleteMany();
 		} catch (error) {
 			console.error(error);
 			throw error;
