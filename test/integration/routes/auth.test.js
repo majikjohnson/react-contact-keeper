@@ -1,8 +1,6 @@
 const request = require('supertest');
 const app = require('../../../app');
 const mongoMemSvrHelper = require('../../support/mongoMemSvrHelper');
-const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const userTestData = require('../../fixtures/user.data');
 
 describe('Auth routes', () => {
@@ -19,166 +17,168 @@ describe('Auth routes', () => {
 		mongoMemSvrHelper.stopServer(mongoServer);
 	});
 
+	afterEach(async () => {
+		mongoMemSvrHelper.removeAllUsers();
+	});
+
 	describe('POST /api/auth', () => {
 		it('should allow user to log in successfully', async () => {
 			const { email, password } = userTestData.validUser;
-			try {
-				await mongoMemSvrHelper.insertUser(userTestData.validUser);
-				await request(app)
-					.post('/api/auth/')
-					.set('Content-Type', 'application/json')
-					.send({ email, password })
-					.expect(200)
-					.expect(res => {
-						const token = res.body.token;
-						if (!token) throw new Error('Token missing');
-						if (!token.match(/^[\w-]*\.[\w-]*\.[\w-]*$/)) {
-							throw new Error(
-								`Token format incorrect:\n\ttoken: ${token}`
-							);
-						}
-					});
-			} catch (error) {
-				console.log(error);
-				throw error;
-			} finally {
-				mongoMemSvrHelper.removeAllUsers();
-			}
+
+			await mongoMemSvrHelper.insertUser(userTestData.validUser);
+			await request(app)
+				.post('/api/auth/')
+				.set('Content-Type', 'application/json')
+				.send({ email, password })
+				.expect(200)
+				.expect(res => {
+					const token = res.body.token;
+					if (!token) throw new Error('Token missing');
+					if (!token.match(/^[\w-]*\.[\w-]*\.[\w-]*$/)) {
+						throw new Error(
+							`Token format incorrect:\n\ttoken: ${token}`
+						);
+					}
+				});
 		});
 
 		it('should not allow login if user does not exist', async () => {
 			const { email, password } = userTestData.unregisteredUser;
 			const expectedErrMsg = "User doesn't exist";
-			try {
-				await mongoMemSvrHelper.insertUser(userTestData.validUser);
-				await request(app)
-					.post('/api/auth/')
-					.set('Content-Type', 'application/json')
-					.send({ email, password })
-					.expect(400, {
-						msg: expectedErrMsg,
-					});
-			} catch (error) {
-				console.log(error);
-				throw error;
-			} finally {
-				mongoMemSvrHelper.removeAllUsers();
-			}
+
+			await mongoMemSvrHelper.insertUser(userTestData.validUser);
+			await request(app)
+				.post('/api/auth/')
+				.set('Content-Type', 'application/json')
+				.send({ email, password })
+				.expect(400, {
+					msg: expectedErrMsg,
+				});
 		});
 
 		it('should not allow login if email address is not provided', async () => {
 			const { password } = userTestData.validUser;
 			const expectedErrMsg = 'Please use a valid email address';
-			try {
-				await mongoMemSvrHelper.insertUser(userTestData.validUser);
-				await request(app)
-					.post('/api/auth/')
-					.set('Content-Type', 'application/json')
-					.send({ password })
-					.expect(400)
-					.expect(res => {
-						const msg = res.body.error[0].msg;
-						if (msg !== expectedErrMsg) {
-							throw new Error(
-								'response does not contain the correct error message' +
-									'\n\tExpected: ' +
-									expectedErrMsg +
-									'\n\tGot: ' +
-									msg
-							);
-						}
-					});
-			} catch (error) {
-				console.log(error);
-				throw error;
-			} finally {
-				mongoMemSvrHelper.removeAllUsers();
-			}
+
+			await mongoMemSvrHelper.insertUser(userTestData.validUser);
+			await request(app)
+				.post('/api/auth/')
+				.set('Content-Type', 'application/json')
+				.send({ password })
+				.expect(400)
+				.expect(res => {
+					const msg = res.body.error[0].msg;
+					if (msg !== expectedErrMsg) {
+						throw new Error(
+							'response does not contain the correct error message' +
+								'\n\tExpected: ' +
+								expectedErrMsg +
+								'\n\tGot: ' +
+								msg
+						);
+					}
+				});
 		});
 
 		it('should not allow login if password is incorrect', async () => {
 			const { email } = userTestData.validUser;
 			const password = 'BadPassword';
 			const expectedErrMsg = 'Incorrect password';
-			try {
-				await mongoMemSvrHelper.insertUser(userTestData.validUser);
-				await request(app)
-					.post('/api/auth/')
-					.set('Content-Type', 'application/json')
-					.send({ email, password })
-					.expect(400, {
-						msg: expectedErrMsg,
-					});
-			} catch (error) {
-				console.log(error);
-				throw error;
-			} finally {
-				mongoMemSvrHelper.removeAllUsers();
-			}
+
+			await mongoMemSvrHelper.insertUser(userTestData.validUser);
+			await request(app)
+				.post('/api/auth/')
+				.set('Content-Type', 'application/json')
+				.send({ email, password })
+				.expect(400, {
+					msg: expectedErrMsg,
+				});
 		});
 
 		it('should not allow login if password is not provided', async () => {
 			const { email } = userTestData.validUser;
 			const expectedErrMsg = 'Please enter a password';
-			try {
-				await mongoMemSvrHelper.insertUser(userTestData.validUser);
-				await request(app)
-					.post('/api/auth/')
-					.set('Content-Type', 'application/json')
-					.send({ email })
-					.expect(400)
-					.expect(res => {
-						const msg = res.body.error[0].msg;
-						if (msg !== expectedErrMsg) {
-							throw new Error(
-								'response does not contain the correct error message' +
-									'\n\tExpected: ' +
-									expectedErrMsg +
-									'\n\tGot: ' +
-									msg
-							);
-						}
-					});
-			} catch (error) {
-				console.log(error);
-				throw error;
-			} finally {
-				mongoMemSvrHelper.removeAllUsers();
-			}
+
+			await mongoMemSvrHelper.insertUser(userTestData.validUser);
+			await request(app)
+				.post('/api/auth/')
+				.set('Content-Type', 'application/json')
+				.send({ email })
+				.expect(400)
+				.expect(res => {
+					const msg = res.body.error[0].msg;
+					if (msg !== expectedErrMsg) {
+						throw new Error(
+							'response does not contain the correct error message' +
+								'\n\tExpected: ' +
+								expectedErrMsg +
+								'\n\tGot: ' +
+								msg
+						);
+					}
+				});
 		});
 
 		it('should not allow login if no credentials are provided', async () => {
 			const expectedErrMsg = 'Please use a valid email address';
-			try {
-				await mongoMemSvrHelper.insertUser(userTestData.validUser);
-				await request(app)
-					.post('/api/auth/')
-					.set('Content-Type', 'application/json')
-					.expect(400)
-					.expect(res => {
-						const msg = res.body.error[0].msg;
-						if (msg !== expectedErrMsg) {
-							throw new Error(
-								'response does not contain the correct error message' +
-									'\n\tExpected: ' +
-									expectedErrMsg +
-									'\n\tGot: ' +
-									msg
-							);
-						}
-					});
-			} catch (error) {
-				console.log(error);
-				throw error;
-			} finally {
-				mongoMemSvrHelper.removeAllUsers();
-			}
+			await mongoMemSvrHelper.insertUser(userTestData.validUser);
+			await request(app)
+				.post('/api/auth/')
+				.set('Content-Type', 'application/json')
+				.expect(400)
+				.expect(res => {
+					const msg = res.body.error[0].msg;
+					if (msg !== expectedErrMsg) {
+						throw new Error(
+							'response does not contain the correct error message' +
+								'\n\tExpected: ' +
+								expectedErrMsg +
+								'\n\tGot: ' +
+								msg
+						);
+					}
+				});
 		});
 	});
 
 	describe('GET /api/auth', () => {
-		it.skip("should return the user's details (except password) if auth token is present", () => {});
+		it("should return the user's details (except password) if auth token is present", async () => {
+			const userDbJson = await mongoMemSvrHelper.insertUser(
+				userTestData.validUser
+			);
+			const token = await mongoMemSvrHelper.logInUser(userDbJson);
 
-		it.skip('should return an authorisation error if auth token is missing', () => {});
+			const response = await request(app)
+				.get('/api/auth/')
+				.set('Content-Type', 'application/json')
+				.set('x-auth-token', token);
+
+			response.status.should.equal(200);
+			response.body.user.should.have
+				.property('name')
+				.and.equal(userDbJson.name);
+			response.body.user.should.have
+				.property('email')
+				.and.equal(userDbJson.email);
+			response.body.user.should.not.have.property('password');
+			response.body.user.should.have
+				.property('_id')
+				.and.match(/^\w{24}$/);
+			response.body.user.should.have
+				.property('date')
+				.and.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+		});
+
+		it('should return an authorisation error if auth token is missing', async () => {
+			const errorMessage = 'No auth token.  Access Denied.';
+			await mongoMemSvrHelper.insertUser(userTestData.validUser);
+
+			const response = await request(app)
+				.get('/api/auth/')
+				.set('Content-Type', 'application/json');
+
+			response.status.should.equal(401);
+			response.body.should.have.property('msg').and.equal(errorMessage);
+		});
 	});
 });
