@@ -10,6 +10,7 @@ const opts = {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
 	useCreateIndex: true,
+	useFindAndModify: false
 };
 
 module.exports = {
@@ -87,7 +88,6 @@ module.exports = {
 
 	insertContacts: async (id, contactsData) => {
 		const allContactData = [].concat(contactsData);
-		//let contactModels = [];
 		let dbPromises = [];
 
 		allContactData.forEach((contactData) => {
@@ -105,19 +105,13 @@ module.exports = {
 			
 		});
 		await Promise.all(dbPromises);
-		//console.log(contactModels);
-		//return contactModels;
-		// DO WE NEED THIS LINE?
-		//const myContacts = await Contact.find({user: id});
-		//console.log({myContacts});
+		return dbPromises;
 	},
 
-	getContacts: async (id) => {
+	getAllContacts: async (userId) => {
 		try {
 			
-			const contacts = await Contact.find({user: id}).sort({date: -1});
-			//console.log({contacts});
-			//console.log(id);
+			const contacts = await Contact.find({user: userId}).sort({date: -1});
 			return contacts;
 		} catch (error) {
 			console.error(error);
