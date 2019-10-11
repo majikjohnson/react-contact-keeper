@@ -1,12 +1,24 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import './App.css';
+import Navbar from './components/layout/Navbar';
+import About from './components/pages/About';
+import Home from './components/pages/Home';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 const App = () => {
-  return (
-    <div className="App">
-      My App
-    </div>
-  );
-}
+	return (
+		<Router>
+			<Fragment>
+				<Navbar />
+				<div className="container">
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/About" component={About} />
+          </Switch>
+        </div>
+			</Fragment>
+		</Router>
+	);
+};
 
 export default App;
