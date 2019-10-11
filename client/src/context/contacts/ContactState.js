@@ -19,6 +19,7 @@ const ContactState = props => {
                 id: 1,
                 name: "Mickey Mouse",
                 email: "mmouse@nascentpixels.io",
+                phone: "01234567890",
                 type: "business"  
             },
             {
