@@ -29,7 +29,7 @@ const ContactState = props => {
                 type: "personal"  
             },
             {
-                id: 2,
+                id: 3,
                 name: "Minnie Mouse",
                 email: "mmouse2@nascentpixels.io",
                 type: "business"  
