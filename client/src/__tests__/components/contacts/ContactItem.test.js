@@ -17,6 +17,11 @@ describe('ContactItem Component', () => {
 			<ContactItem contact={contact} />
 		);
 
+        // Thought quite hard about whether to check for the email/phone images (obtained via CSS class)
+        // Also, thought about checking the colour of 'Business' by checking the CSS class
+        // Decided that the above cases were impelmentation detail, and should be checked by higher layer
+        // Considered checking that Edit/Delete are buttons, but this again is implementation detail (i.e. could be changed to links).
+        // Will check the button functionality in different tests when the functionality is implemented
         expect(getByText('Mickey Mouse'));
         expect(getByTestId('envelope-icon'));
         expect(getByText('mmouse@nascentpixels.io'));
@@ -24,7 +29,7 @@ describe('ContactItem Component', () => {
 		expect(getByText('01234567890'));
         expect(getByText('Business'));
         expect(getByText('Edit'));
-		expect(getByText('Delete'));
+        expect(getByText('Delete'));
     });
     
     it('Should display contact with partial details', () => {
