@@ -22,13 +22,13 @@ const renderContactForm = () => {
 
 describe('Add Contact Form', () => {
 	it('should display the form with correct title', () => {
-		const { getByTestId } = render(<ContactForm />);
+		const { getByTestId } = render(<ContactState><ContactForm /></ContactState>);
 
 		expect(getByTestId('form-title')).toHaveTextContent('Add Contact');
 	});
 
 	it('should display the form with correct placeholder text', () => {
-		const { getByPlaceholderText } = render(<ContactForm />);
+		const { getByPlaceholderText } = render(<ContactState><ContactForm /></ContactState>);
 
 		expect(getByPlaceholderText('Name'));
 		expect(getByPlaceholderText('Email'));
@@ -36,13 +36,13 @@ describe('Add Contact Form', () => {
 	});
 
 	it('should set "personal" contact type as the default', () => {
-		const { getByTestId } = render(<ContactForm />);
+		const { getByTestId } = render(<ContactState><ContactForm /></ContactState>);
 
 		expect(getByTestId('type-personal')).toHaveAttribute('checked');
 		expect(getByTestId('type-business')).not.toHaveAttribute('checked');
 	});
 
-	it('should allow user to enter a new contact providing full details', () => {
+	it('should allow user to enter a new contact providing full details', async () => {
 		const {
 			getByPlaceholderText,
 			getByTestId,
@@ -55,14 +55,6 @@ describe('Add Contact Form', () => {
 		userEvent.type(getByPlaceholderText('Phone'), '01234567899');
 		userEvent.click(getByTestId('submit-contact'));
 
-		//Check that the form values have been cleared
-		expect(getByTestId('add-contact-form')).toHaveFormValues({
-			name: '',
-			email: '',
-			phone: '',
-			type: 'personal'
-		});
-
 		//Check that the dom now contains the 4th contact card
 		const contactCards = getAllByTestId(/card-id-/);
 		expect(contactCards).toHaveLength(4);
@@ -72,6 +64,25 @@ describe('Add Contact Form', () => {
 		expect(contactCards[3]).toHaveTextContent('ppig@nacentpixels.io');
 		expect(contactCards[3]).toHaveTextContent('01234567899');
 		expect(contactCards[3]).toHaveTextContent('Personal');
+	});
+
+	it('should clear the form when a new contact is submitted', () => {
+		const { getByTestId, getByPlaceholderText } = render(<ContactState><ContactForm /></ContactState>);
+
+		//Enter contact details in the form and submit
+		userEvent.type(getByPlaceholderText('Name'), 'Peppa Pig');
+		userEvent.type(getByPlaceholderText('Email'), 'ppig@nacentpixels.io');
+		userEvent.type(getByPlaceholderText('Phone'), '01234567899');
+		userEvent.click(getByTestId('type-business'));
+		userEvent.click(getByTestId('submit-contact'));
+
+		//Check that the form values have been cleared
+		expect(getByTestId('add-contact-form')).toHaveFormValues({
+			name: '',
+			email: '',
+			phone: '',
+			type: 'personal'
+		});
 	});
 
 	it('should allow user to choose "business" for contact type', () => {
