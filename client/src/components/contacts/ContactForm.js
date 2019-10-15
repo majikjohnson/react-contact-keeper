@@ -32,8 +32,8 @@ const ContactForm = () => {
 	};
 
 	return (
-		<form onSubmit={onSubmit}>
-			<h2 className="text-primary">Add Contact</h2>
+		<form data-testid="add-contact-form" onSubmit={onSubmit}>
+			<h2 className="text-primary" data-testid="form-title" >Add Contact</h2>
 			<input
 				type="text"
 				placeholder="Name"
@@ -57,6 +57,7 @@ const ContactForm = () => {
 			/>
 			<h5>Contact Type</h5>
 			<input
+				data-testid="type-personal"
                 type="radio"
                 name="type"
 				value="personal"
@@ -65,6 +66,7 @@ const ContactForm = () => {
 			/>{' '}
 			Personal{' '}
 			<input
+				data-testid="type-business"
                 type="radio"
                 name="type"
 				value="business"
@@ -74,6 +76,7 @@ const ContactForm = () => {
 			Business
 			<div>
 				<input
+					data-testid="submit-contact"
 					type="submit"
 					value="Add Contact"
 					className="btn btn-primary btn-block"

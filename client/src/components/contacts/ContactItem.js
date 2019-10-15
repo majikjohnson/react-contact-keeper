@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const ContactItem = ({ contact }) => {
-	const { name, email, phone, type } = contact;
+	const { id, name, email, phone, type } = contact;
 
 	return (
-		<div className="card bg-light">
+		<div data-testid={`card-id-${id}`} className="card bg-light">
 			<h3 className="text-primary text-left">
 				{name}{' '}
 				<span
