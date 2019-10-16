@@ -1,9 +1,11 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitForDomChange } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ContactItem from '../../../components/contacts/ContactItem';
+import ContactForm from '../../../components/contacts/ContactForm';
 import Contacts from '../../../components/contacts/Contacts';
 import ContactState from '../../../context/contacts/ContactState';
+import Home from '../../../components/pages/Home';
 
 const renderContactList = () => {
 	return render(
@@ -15,8 +17,23 @@ const renderContactList = () => {
 	);
 };
 
+const renderContactForm = () => {
+	return render(
+		<ContactState>
+			<div>
+				<div>
+					<ContactForm />
+				</div>
+				<div>
+					<Contacts />
+				</div>
+			</div>
+		</ContactState>
+	);
+};
+
 describe('ContactItem Component', () => {
-	it('Should display contact with full details', () => {
+	it('should display contact with full details', () => {
 		const contact = {
 			id: 1,
 			name: 'Mickey Mouse',
@@ -46,7 +63,7 @@ describe('ContactItem Component', () => {
 		expect(getByText('Delete'));
 	});
 
-	it('Should display contact with partial details', () => {
+	it('should display contact with partial details', () => {
 		const contact = {
 			id: 1,
 			name: 'Mickey Mouse',
@@ -67,7 +84,27 @@ describe('ContactItem Component', () => {
 		expect(queryByTestId('phone-icon')).toBeNull();
 	});
 
-	it.skip('should navigate to edit page when user clicks "Edit"', () => {});
+	it('should populate the contact form with the contact details when the user clicks "edit"', async () => {
+		const { getByPlaceholderText, getAllByText, getByTestId } = renderContactForm();
+
+		//Get the edit buttons.  As there are 3 contact cards there should be 3 edit buttons
+		const editButtons = getAllByText('Edit');
+		expect(editButtons).toHaveLength(3);
+
+		//Click the edit button on card 2
+		userEvent.click(editButtons[1]);
+
+		//Check that the dom has updated following the button being clicked.
+		const node = await waitForDomChange(getByPlaceholderText('Name'));
+
+		//Check that the contact form is populated with the correct details
+		expect(getByTestId('add-contact-form')).toHaveFormValues({
+			name: 'Donald Duck',
+			email: 'dduck@nascentpixels.io',
+			phone: '01234567891',
+			type: 'personal',
+		});
+	});
 
 	it('should delete the correct contact when user clicks "Delete" while multiple contacts are displayed', () => {
 		const { getByText, queryByText, getAllByText } = renderContactList();
@@ -100,8 +137,8 @@ describe('ContactItem Component', () => {
 		//There should be 3 contact cards to start with
 		expect(queryAllByTestId(/card-id-/)).toHaveLength(3);
 
-        //Get the delete buttons for all 3 contact cards and click each of them
-        const deleteButtons = getAllByText('Delete');
+		//Get the delete buttons for all 3 contact cards and click each of them
+		const deleteButtons = getAllByText('Delete');
 		deleteButtons.forEach(button => {
 			userEvent.click(button);
 		});

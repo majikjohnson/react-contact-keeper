@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitForDomChange } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ContactForm from '../../../components/contacts/ContactForm';
 import Contacts from '../../../components/contacts/Contacts';
@@ -22,13 +22,21 @@ const renderContactForm = () => {
 
 describe('Add Contact Form', () => {
 	it('should display the form with correct title', () => {
-		const { getByTestId } = render(<ContactState><ContactForm /></ContactState>);
+		const { getByTestId } = render(
+			<ContactState>
+				<ContactForm />
+			</ContactState>
+		);
 
 		expect(getByTestId('form-title')).toHaveTextContent('Add Contact');
 	});
 
 	it('should display the form with correct placeholder text', () => {
-		const { getByPlaceholderText } = render(<ContactState><ContactForm /></ContactState>);
+		const { getByPlaceholderText } = render(
+			<ContactState>
+				<ContactForm />
+			</ContactState>
+		);
 
 		expect(getByPlaceholderText('Name'));
 		expect(getByPlaceholderText('Email'));
@@ -36,7 +44,11 @@ describe('Add Contact Form', () => {
 	});
 
 	it('should set "personal" contact type as the default', () => {
-		const { getByTestId } = render(<ContactState><ContactForm /></ContactState>);
+		const { getByTestId } = render(
+			<ContactState>
+				<ContactForm />
+			</ContactState>
+		);
 
 		expect(getByTestId('type-personal')).toHaveAttribute('checked');
 		expect(getByTestId('type-business')).not.toHaveAttribute('checked');
@@ -67,7 +79,11 @@ describe('Add Contact Form', () => {
 	});
 
 	it('should clear the form when a new contact is submitted', () => {
-		const { getByTestId, getByPlaceholderText } = render(<ContactState><ContactForm /></ContactState>);
+		const { getByTestId, getByPlaceholderText } = render(
+			<ContactState>
+				<ContactForm />
+			</ContactState>
+		);
 
 		//Enter contact details in the form and submit
 		userEvent.type(getByPlaceholderText('Name'), 'Peppa Pig');
@@ -81,7 +97,7 @@ describe('Add Contact Form', () => {
 			name: '',
 			email: '',
 			phone: '',
-			type: 'personal'
+			type: 'personal',
 		});
 	});
 
@@ -175,6 +191,129 @@ describe('Add Contact Form', () => {
 
 		//Check that there is not an email address in the contact card
 		expect(contactCards[3]).not.toHaveTextContent(/\w+@\w+/);
+	});
+
+	it('Should change to the "Update" Contact Form UI when the user clicks edit on a contact card', () => {
+		const { getByTestId, getAllByText } = renderContactForm();
+
+		//click the edit button on a contact
+		const editButtons = getAllByText('Edit');
+		userEvent.click(editButtons[0]);
+
+		//Check that the contact form title and button text is correct
+		expect(getByTestId('form-title')).toHaveTextContent('Update Contact');
+		expect(getByTestId('submit-contact')).toHaveAttribute(
+			'value',
+			'Update'
+		);
+	});
+
+	it('Should display updated details when the user clicks "update" after editing all contact details', async () => {
+		const {
+			getByPlaceholderText,
+			getByTestId,
+			getAllByTestId,
+			getAllByText,
+		} = renderContactForm();
+
+		//Get the edit buttons.  As there are 3 contact cards there should be 3 edit buttons
+		const editButtons = getAllByText('Edit');
+		expect(editButtons).toHaveLength(3);
+
+		//Click the edit button on card 2
+		userEvent.click(editButtons[1]);
+
+		//Check that the dom has updated following the button being clicked.
+		const node = await waitForDomChange(getByPlaceholderText('Name'));
+
+		//Update the form fields and submit
+		userEvent.type(getByPlaceholderText('Name'), 'Peppa Pig');
+		userEvent.type(getByPlaceholderText('Email'), 'ppig@nacentpixels.io');
+		userEvent.type(getByPlaceholderText('Phone'), '01234567899');
+		userEvent.click(getByTestId('type-business'));
+		userEvent.click(getByTestId('submit-contact'));
+
+		//Check that the contact details have been updated
+		const contactCards = getAllByTestId(/card-id-/);
+		expect(contactCards[1]).toHaveTextContent('Peppa Pig');
+		expect(contactCards[1]).toHaveTextContent('ppig@nacentpixels.io');
+		expect(contactCards[1]).toHaveTextContent('01234567899');
+		expect(contactCards[1]).toHaveTextContent('Business');
+	});
+
+	it('Should update the correct field when user only updates a single detail', async () => {
+		const {
+			getByPlaceholderText,
+			getByTestId,
+			getAllByTestId,
+			getAllByText,
+		} = renderContactForm();
+
+		//Get the edit buttons.  As there are 3 contact cards there should be 3 edit buttons
+		const editButtons = getAllByText('Edit');
+		expect(editButtons).toHaveLength(3);
+
+		//Click the edit button on card 2
+		userEvent.click(editButtons[1]);
+
+		//Check that the dom has updated following the button being clicked.
+		const node = await waitForDomChange(getByPlaceholderText('Name'));
+
+		//Update the form field and submit
+		userEvent.type(
+			getByPlaceholderText('Email'),
+			'newemail@nacentpixels.io'
+		);
+		userEvent.click(getByTestId('submit-contact'));
+
+		//Check that the contact details have been updated
+		const contactCards = getAllByTestId(/card-id-/);
+		expect(contactCards[1]).toHaveTextContent('Donald Duck');
+		expect(contactCards[1]).toHaveTextContent('newemail@nacentpixels.io');
+		expect(contactCards[1]).toHaveTextContent('01234567891');
+		expect(contactCards[1]).toHaveTextContent('Personal');
+	});
+
+	it('should not update the contact if the user clicks "clear"', async () => {
+		const {
+			getByPlaceholderText,
+			getByText,
+			getAllByTestId,
+			getAllByText,
+			getByTestId,
+		} = renderContactForm();
+
+		//Get the edit buttons.  As there are 3 contact cards there should be 3 edit buttons
+		const editButtons = getAllByText('Edit');
+		expect(editButtons).toHaveLength(3);
+
+		//Click the edit button on card 2
+		userEvent.click(editButtons[1]);
+
+		//Check that the dom has updated following the button being clicked.
+		await waitForDomChange(getByPlaceholderText('Name'));
+
+		//Update a form field, then click cancel
+		userEvent.type(
+			getByPlaceholderText('Email'),
+			'newemail@nacentpixels.io'
+		);
+		userEvent.click(getByText('Clear'));
+
+		//Check that the form values have been cleared
+		expect(getByTestId('add-contact-form')).toHaveFormValues({
+			name: '',
+			email: '',
+			phone: '',
+			type: 'personal',
+		});
+
+		//Check that the contact details have not been updated
+		const contactCards = getAllByTestId(/card-id-/);
+		expect(contactCards[1]).toHaveTextContent('Donald Duck');
+		expect(contactCards[1]).toHaveTextContent('dduck@nascentpixels.io');
+		expect(contactCards[1]).toHaveTextContent('01234567891');
+		expect(contactCards[1]).toHaveTextContent('Personal');
 	});
 
 	it.skip('should display an error if the user attempts to submit and invalid contact', () => {});
