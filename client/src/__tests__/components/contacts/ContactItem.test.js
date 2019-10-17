@@ -5,7 +5,6 @@ import ContactItem from '../../../components/contacts/ContactItem';
 import ContactForm from '../../../components/contacts/ContactForm';
 import Contacts from '../../../components/contacts/Contacts';
 import ContactState from '../../../context/contacts/ContactState';
-import Home from '../../../components/pages/Home';
 
 const renderContactList = () => {
 	return render(
@@ -31,6 +30,16 @@ const renderContactForm = () => {
 		</ContactState>
 	);
 };
+
+jest.mock('react-transition-group', () => {
+	const FakeTransitionGroup = jest.fn(({children}) => children);
+	const FakeCSSTransition = jest.fn(({children}) => children);
+
+	return {
+		CSSTransition: FakeCSSTransition,
+		TransitionGroup: FakeTransitionGroup
+	}
+});
 
 describe('ContactItem Component', () => {
 	it('should display contact with full details', () => {
@@ -85,7 +94,11 @@ describe('ContactItem Component', () => {
 	});
 
 	it('should populate the contact form with the contact details when the user clicks "edit"', async () => {
-		const { getByPlaceholderText, getAllByText, getByTestId } = renderContactForm();
+		const {
+			getByPlaceholderText,
+			getAllByText,
+			getByTestId,
+		} = renderContactForm();
 
 		//Get the edit buttons.  As there are 3 contact cards there should be 3 edit buttons
 		const editButtons = getAllByText('Edit');
