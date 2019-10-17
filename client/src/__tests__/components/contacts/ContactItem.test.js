@@ -31,16 +31,6 @@ const renderContactForm = () => {
 	);
 };
 
-jest.mock('react-transition-group', () => {
-	const FakeTransitionGroup = jest.fn(({children}) => children);
-	const FakeCSSTransition = jest.fn(({children}) => children);
-
-	return {
-		CSSTransition: FakeCSSTransition,
-		TransitionGroup: FakeTransitionGroup
-	}
-});
-
 describe('ContactItem Component', () => {
 	it('should display contact with full details', () => {
 		const contact = {

@@ -16,16 +16,6 @@ const renderContactListAndFilter = () => {
 	);
 };
 
-jest.mock('react-transition-group', () => {
-	const FakeTransitionGroup = jest.fn(({children}) => children);
-	const FakeCSSTransition = jest.fn(({children}) => children);
-
-	return {
-		CSSTransition: FakeCSSTransition,
-		TransitionGroup: FakeTransitionGroup
-	}
-});
-
 describe('Contact Filter', () => {
 	it('should display all contacts when the search text matches all contact names', () => {
 		const {
