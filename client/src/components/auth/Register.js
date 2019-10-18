@@ -1,5 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import AlertContext from '../../context/alerts/AlertContext';
+import AuthContext from '../../context/auth/AuthContext';
 
 const Register = () => {
 	const [user, setUser] = useState({
@@ -9,11 +10,19 @@ const Register = () => {
 		password2: '',
 	});
 
-	const { name, email, password, password2 } = user;
-
 	const alertContext = useContext(AlertContext);
+	const authContext = useContext(AuthContext);
 
+	const { name, email, password, password2 } = user;
 	const { setAlert } = alertContext;
+	const { register, error, clearErrors } = authContext;
+
+	useEffect(() => {
+		if(error === 'User already exists in database') {
+			setAlert(error, 'danger');
+			clearErrors();
+		}
+	});
 
 	const onChange = e => setUser({ ...user, [e.target.name]: e.target.value });
 
@@ -29,9 +38,13 @@ const Register = () => {
 		} else if (password.length < 6 || password2.length < 6) {
 			setAlert('Password must be at least 6 characters long', 'danger');
 		} else if (password !== password2) {
-			setAlert('Password doesn\'t match Password Confirmation', 'danger');
+			setAlert("Password doesn't match Password Confirmation", 'danger');
 		} else {
-			console.log('User Registered');
+			register({
+				name,
+				email,
+				password,
+			});
 		}
 	};
 
