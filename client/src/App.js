@@ -29,21 +29,9 @@ const App = () => {
 								<Alerts />
 								<Switch>
 									<PrivateRoute exact path="/" component={Home} />
-									<Route
-										exact
-										path="/About"
-										component={About}
-									/>
-									<Route
-										exact
-										path="/Register"
-										component={Register}
-									/>
-									<Route
-										exact
-										path="/Login"
-										component={Login}
-									/>
+									<Route exact path="/About" component={About} />
+									<Route exact path="/Register" component={Register} />
+									<Route exact path="/Login" component={Login} />
 								</Switch>
 							</div>
 						</Fragment>

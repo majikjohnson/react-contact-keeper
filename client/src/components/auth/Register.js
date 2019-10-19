@@ -62,6 +62,7 @@ const Register = props => {
 				<div className="form-group">
 					<label htmlFor="name">Name</label>
 					<input
+						data-testid="register-name"
 						type="text"
 						name="name"
 						value={name}
@@ -71,6 +72,7 @@ const Register = props => {
 				<div className="form-group">
 					<label htmlFor="email">Email</label>
 					<input
+						data-testid="register-email"
 						type="email"
 						name="email"
 						value={email}
@@ -80,6 +82,7 @@ const Register = props => {
 				<div className="form-group">
 					<label htmlFor="password">Password</label>
 					<input
+						data-testid="register-password"
 						type="password"
 						name="password"
 						value={password}
@@ -89,6 +92,7 @@ const Register = props => {
 				<div className="form-group">
 					<label htmlFor="password2">Confirm Password</label>
 					<input
+						data-testid="register-password2"
 						type="password"
 						name="password2"
 						value={password2}
@@ -96,6 +100,7 @@ const Register = props => {
 					/>
 				</div>
 				<input
+					data-testid="submit-register"
 					type="submit"
 					value="Register"
 					className="btn btn-primary btn-block"
