@@ -45,7 +45,7 @@ const userResp = {
 	user: {
 		_id: '5d975cf367fd0e1c58383d26',
 		name: 'Harry Potter',
-		email: 'hpotter@nascentpixels.io',
+		email: 'hpotter@hogwarts.io',
 		date: '2019-10-04T14:53:39.270Z',
 		__v: 0,
 	},
@@ -59,7 +59,7 @@ describe('UserLogin', () => {
 
 		const { getByTestId, getByText } = renderLoginForm();
 
-		userEvent.type(getByTestId('login-email'), 'hpotter@nascentpixels.io');
+		userEvent.type(getByTestId('login-email'), 'hpotter@hogwarts.io');
 		userEvent.type(getByTestId('login-password'), 'abc123');
 		userEvent.click(getByTestId('login-submit'));
 
@@ -75,7 +75,7 @@ describe('UserLogin', () => {
 
 		const { getByTestId, getByText } = renderLoginForm();
 
-		userEvent.type(getByTestId('login-email'), 'hpotter@nascentpixels.io');
+		userEvent.type(getByTestId('login-email'), 'hpotter@hogwarts.io');
 		userEvent.type(getByTestId('login-password'), 'xxxxxx');
 		userEvent.click(getByTestId('login-submit'));
 
@@ -91,7 +91,7 @@ describe('UserLogin', () => {
 
 		const { getByTestId, getByText } = renderLoginForm();
 
-		userEvent.type(getByTestId('login-email'), 'xxxxxx@nascentpixels.io');
+		userEvent.type(getByTestId('login-email'), 'hpotter@hogwarts.io');
 		userEvent.type(getByTestId('login-password'), 'abc123');
 		userEvent.click(getByTestId('login-submit'));
 
@@ -112,7 +112,7 @@ describe('UserLogin', () => {
 	it('should display error if password is missing', () => {
 		const { getByTestId, getByText } = renderLoginForm();
 
-		userEvent.type(getByTestId('login-email'), 'hpotter@nascentpixels.io');
+		userEvent.type(getByTestId('login-email'), 'hpotter@hogwarts.io');
 		userEvent.click(getByTestId('login-submit'));
 
 		expect(getByText(/You must enter a valid email and password/));
