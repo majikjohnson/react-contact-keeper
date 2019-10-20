@@ -1,27 +1,13 @@
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import ContactFilter from '../../../components/contacts/ContactFilter';
-import Contacts from '../../../components/contacts/Contacts';
-import ContactState from '../../../context/contacts/ContactState';
-
-const renderContactListAndFilter = () => {
-	return render(
-		<ContactState>
-			<div>
-				<ContactFilter />
-				<Contacts />
-			</div>
-		</ContactState>
-	);
-};
+import componentRenderer from '../../../testingUtils/componentRenderer';
 
 describe('Contact Filter', () => {
 	it('should display all contacts when the search text matches all contact names', () => {
 		const {
 			getAllByTestId,
 			getByPlaceholderText,
-		} = renderContactListAndFilter();
+		} = componentRenderer.contactFilterWithContacts();
 
 		//Enter 'o' as search text in filter
 		userEvent.type(getByPlaceholderText('Filter Contacts...'), 'o');
@@ -35,7 +21,7 @@ describe('Contact Filter', () => {
 		const {
 			getAllByTestId,
 			getByPlaceholderText,
-		} = renderContactListAndFilter();
+		} = componentRenderer.contactFilterWithContacts();
 
 		//Enter 'nasc' as search text in filter
 		userEvent.type(getByPlaceholderText('Filter Contacts...'), 'nasc');
@@ -49,7 +35,7 @@ describe('Contact Filter', () => {
 		const {
 			getAllByTestId,
 			getByPlaceholderText,
-		} = renderContactListAndFilter();
+		} = componentRenderer.contactFilterWithContacts();
 
 		//Enter 'm' as search text in filter
 		userEvent.type(getByPlaceholderText('Filter Contacts...'), 'm');
@@ -70,7 +56,7 @@ describe('Contact Filter', () => {
         const {
 			queryAllByTestId,
 			getByPlaceholderText,
-		} = renderContactListAndFilter();
+		} = componentRenderer.contactFilterWithContacts();
 
 		//Enter 'xxx' as search text in filter
 		userEvent.type(getByPlaceholderText('Filter Contacts...'), 'xxx');
@@ -84,7 +70,7 @@ describe('Contact Filter', () => {
         const {
 			getAllByTestId,
 			getByPlaceholderText,
-		} = renderContactListAndFilter();
+		} = componentRenderer.contactFilterWithContacts();
 
 		//Enter 'm' as search text in filter
 		userEvent.type(getByPlaceholderText('Filter Contacts...'), 'm');

@@ -2,34 +2,8 @@ import React from 'react';
 import { render, waitForDomChange } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ContactItem from '../../../components/contacts/ContactItem';
-import ContactForm from '../../../components/contacts/ContactForm';
-import Contacts from '../../../components/contacts/Contacts';
 import ContactState from '../../../context/contacts/ContactState';
-
-const renderContactList = () => {
-	return render(
-		<ContactState>
-			<div>
-				<Contacts />
-			</div>
-		</ContactState>
-	);
-};
-
-const renderContactForm = () => {
-	return render(
-		<ContactState>
-			<div>
-				<div>
-					<ContactForm />
-				</div>
-				<div>
-					<Contacts />
-				</div>
-			</div>
-		</ContactState>
-	);
-};
+import componentRenderer from '../../../testingUtils/componentRenderer';
 
 describe('ContactItem Component', () => {
 	it('should display contact with full details', () => {
@@ -41,11 +15,7 @@ describe('ContactItem Component', () => {
 			type: 'business',
 		};
 
-		const { getByText, getByTestId } = render(
-			<ContactState>
-				<ContactItem contact={contact} />
-			</ContactState>
-		);
+		const { getByText, getByTestId } = componentRenderer.contactItem(contact);
 
 		// Thought quite hard about whether to check for the email/phone images (obtained via CSS class)
 		// Also, thought about checking the colour of 'Business' by checking the CSS class
@@ -69,11 +39,7 @@ describe('ContactItem Component', () => {
 			type: 'personal',
 		};
 
-		const { getByText, queryByTestId } = render(
-			<ContactState>
-				<ContactItem contact={contact} />
-			</ContactState>
-		);
+		const { getByText, queryByTestId } = componentRenderer.contactItem(contact);
 
 		expect(getByText('Mickey Mouse'));
 		expect(getByText('Personal'));
@@ -88,7 +54,7 @@ describe('ContactItem Component', () => {
 			getByPlaceholderText,
 			getAllByText,
 			getByTestId,
-		} = renderContactForm();
+		} = componentRenderer.contactFormWithContacts();
 
 		//Get the edit buttons.  As there are 3 contact cards there should be 3 edit buttons
 		const editButtons = getAllByText('Edit');
@@ -110,7 +76,7 @@ describe('ContactItem Component', () => {
 	});
 
 	it('should delete the correct contact when user clicks "Delete" while multiple contacts are displayed', () => {
-		const { getByText, queryByText, getAllByText } = renderContactList();
+		const { getByText, queryByText, getAllByText } = componentRenderer.contacts();
 
 		//Get the delete buttons.  As there are 3 contact cards there should be 3 delete buttons
 		const originalDeleteButtons = getAllByText('Delete');
@@ -135,7 +101,7 @@ describe('ContactItem Component', () => {
 	});
 
 	it('should delete the last contact when the user click clicks "Delete"', () => {
-		const { getAllByText, queryAllByTestId } = renderContactList();
+		const { getAllByText, queryAllByTestId } = componentRenderer.contacts();
 
 		//There should be 3 contact cards to start with
 		expect(queryAllByTestId(/card-id-/)).toHaveLength(3);

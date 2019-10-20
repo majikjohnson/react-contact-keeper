@@ -1,42 +1,17 @@
-import React from 'react';
-import { render, waitForDomChange } from '@testing-library/react';
+import { waitForDomChange } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import ContactForm from '../../../components/contacts/ContactForm';
-import Contacts from '../../../components/contacts/Contacts';
-import ContactState from '../../../context/contacts/ContactState';
+import componentRenderer from '../../../testingUtils/componentRenderer';
 
-const renderContactForm = () => {
-	return render(
-		<ContactState>
-			<div>
-				<div>
-					<ContactForm />
-				</div>
-				<div>
-					<Contacts />
-				</div>
-			</div>
-		</ContactState>
-	);
-};
 
 describe('Add Contact Form', () => {
 	it('should display the form with correct title', () => {
-		const { getByTestId } = render(
-			<ContactState>
-				<ContactForm />
-			</ContactState>
-		);
+		const { getByTestId } = componentRenderer.contactForm();
 
 		expect(getByTestId('form-title')).toHaveTextContent('Add Contact');
 	});
 
 	it('should display the form with correct placeholder text', () => {
-		const { getByPlaceholderText } = render(
-			<ContactState>
-				<ContactForm />
-			</ContactState>
-		);
+		const { getByPlaceholderText } = componentRenderer.contactForm();
 
 		expect(getByPlaceholderText('Name'));
 		expect(getByPlaceholderText('Email'));
@@ -44,11 +19,7 @@ describe('Add Contact Form', () => {
 	});
 
 	it('should set "personal" contact type as the default', () => {
-		const { getByTestId } = render(
-			<ContactState>
-				<ContactForm />
-			</ContactState>
-		);
+		const { getByTestId } = componentRenderer.contactForm();
 
 		expect(getByTestId('type-personal')).toHaveAttribute('checked');
 		expect(getByTestId('type-business')).not.toHaveAttribute('checked');
@@ -59,7 +30,7 @@ describe('Add Contact Form', () => {
 			getByPlaceholderText,
 			getByTestId,
 			getAllByTestId,
-		} = renderContactForm();
+		} = componentRenderer.contactFormWithContacts();
 
 		//Enter contact details in the form and submit
 		userEvent.type(getByPlaceholderText('Name'), 'Peppa Pig');
@@ -79,11 +50,7 @@ describe('Add Contact Form', () => {
 	});
 
 	it('should clear the form when a new contact is submitted', () => {
-		const { getByTestId, getByPlaceholderText } = render(
-			<ContactState>
-				<ContactForm />
-			</ContactState>
-		);
+		const { getByTestId, getByPlaceholderText } = componentRenderer.contactForm();
 
 		//Enter contact details in the form and submit
 		userEvent.type(getByPlaceholderText('Name'), 'Peppa Pig');
@@ -106,7 +73,7 @@ describe('Add Contact Form', () => {
 			getByPlaceholderText,
 			getByTestId,
 			getAllByTestId,
-		} = renderContactForm();
+		} = componentRenderer.contactFormWithContacts();
 
 		//Enter contact name in the form and submit
 		userEvent.type(getByPlaceholderText('Name'), 'Peppa Pig');
@@ -127,7 +94,7 @@ describe('Add Contact Form', () => {
 			getByPlaceholderText,
 			getByTestId,
 			getAllByTestId,
-		} = renderContactForm();
+		} = componentRenderer.contactFormWithContacts();
 
 		//Enter contact name in the form and submit
 		userEvent.type(getByPlaceholderText('Name'), 'Peppa Pig');
@@ -150,7 +117,7 @@ describe('Add Contact Form', () => {
 			getByPlaceholderText,
 			getByTestId,
 			getAllByTestId,
-		} = renderContactForm();
+		} = componentRenderer.contactFormWithContacts();
 
 		//Enter contact name in the form and submit
 		userEvent.type(getByPlaceholderText('Name'), 'Peppa Pig');
@@ -174,7 +141,7 @@ describe('Add Contact Form', () => {
 			getByPlaceholderText,
 			getByTestId,
 			getAllByTestId,
-		} = renderContactForm();
+		} = componentRenderer.contactFormWithContacts();
 
 		//Enter contact name in the form and submit
 		userEvent.type(getByPlaceholderText('Name'), 'Peppa Pig');
@@ -194,7 +161,7 @@ describe('Add Contact Form', () => {
 	});
 
 	it('Should change to the "Update" Contact Form UI when the user clicks edit on a contact card', () => {
-		const { getByTestId, getAllByText } = renderContactForm();
+		const { getByTestId, getAllByText } = componentRenderer.contactFormWithContacts();
 
 		//click the edit button on a contact
 		const editButtons = getAllByText('Edit');
@@ -214,7 +181,7 @@ describe('Add Contact Form', () => {
 			getByTestId,
 			getAllByTestId,
 			getAllByText,
-		} = renderContactForm();
+		} = componentRenderer.contactFormWithContacts();
 
 		//Get the edit buttons.  As there are 3 contact cards there should be 3 edit buttons
 		const editButtons = getAllByText('Edit');
@@ -247,7 +214,7 @@ describe('Add Contact Form', () => {
 			getByTestId,
 			getAllByTestId,
 			getAllByText,
-		} = renderContactForm();
+		} = componentRenderer.contactFormWithContacts();
 
 		//Get the edit buttons.  As there are 3 contact cards there should be 3 edit buttons
 		const editButtons = getAllByText('Edit');
@@ -281,7 +248,7 @@ describe('Add Contact Form', () => {
 			getAllByTestId,
 			getAllByText,
 			getByTestId,
-		} = renderContactForm();
+		} = componentRenderer.contactFormWithContacts();
 
 		//Get the edit buttons.  As there are 3 contact cards there should be 3 edit buttons
 		const editButtons = getAllByText('Edit');
