@@ -10,8 +10,8 @@ const Contacts = () => {
 
 	useEffect(() => {
 		getContacts();
-		// eslint-ignore-next-line
-	}, [getContacts]);
+		// eslint-disable-next-line
+	}, []);
 
 	if (contacts !== null && contacts.length === 0 && !loading) {
 		return <h3>Please add a contact</h3>;
