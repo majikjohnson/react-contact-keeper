@@ -6,10 +6,10 @@ const ContactItem = ({ contact }) => {
 	const contactContext = useContext(ContactContext);
 	const { deleteContact, setCurrent, clearCurrent } = contactContext;
 
-	const { id, name, email, phone, type } = contact;
+	const { _id, name, email, phone, type } = contact;
 
 	const onDelete = () => {
-		deleteContact(id);
+		deleteContact(_id);
 		clearCurrent();
 	}
 
@@ -18,7 +18,7 @@ const ContactItem = ({ contact }) => {
 	}
 
 	return (
-		<div data-testid={`card-id-${id}`} className="card bg-light">
+		<div data-testid={`card-id-${_id}`} className="card bg-light">
 			<h3 className="text-primary text-left">
 				{name}{' '}
 				<span
