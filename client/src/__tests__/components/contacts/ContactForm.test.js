@@ -282,6 +282,4 @@ describe('Add Contact Form', () => {
 		expect(contactCards[1]).toHaveTextContent('01234567891');
 		expect(contactCards[1]).toHaveTextContent('Personal');
 	});
-
-	it.skip('should display an error if the user attempts to submit and invalid contact', () => {});
 });
