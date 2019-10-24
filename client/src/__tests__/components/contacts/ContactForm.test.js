@@ -1,4 +1,4 @@
-import { waitForDomChange, waitForElement, getByText } from '@testing-library/react';
+import { waitForDomChange, waitForElement } from '@testing-library/react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import userEvent from '@testing-library/user-event';
@@ -129,7 +129,7 @@ describe('Add Contact Form', () => {
 		userEvent.click(getByTestId('submit-contact'));
 
 		//Check that the form values have been cleared
-		await waitForDomChange(getByPlaceholderText('Name'));
+		await waitForDomChange(() => getAllByTestId(/card-id-/));
 		expect(getByTestId('add-contact-form')).toHaveFormValues({
 			name: '',
 			email: '',
