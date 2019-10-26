@@ -9,7 +9,7 @@ const opts = {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
 	useCreateIndex: true,
-	useFindAndModify: false
+	useFindAndModify: false,
 };
 
 module.exports = {
@@ -45,7 +45,7 @@ module.exports = {
 
 	findUser: async user => {
 		const email = user.email;
-
+		
 		try {
 			const existingUser = await User.findOne({ email });
 			return existingUser;
@@ -58,19 +58,15 @@ module.exports = {
 	logInUser: async user => {
 		try {
 			const exisingUser = await module.exports.findUser(user);
-
 			const payload = {
 				user: {
 					id: exisingUser.id,
 				},
 			};
-
 			const secret = process.env.JWT_SECRET;
-
 			const token = jwt.sign(payload, secret, {
 				expiresIn: 3600,
 			});
-
 			return token;
 		} catch (error) {
 			console.error(error);
@@ -91,28 +87,26 @@ module.exports = {
 		const allContactData = [].concat(contactsData);
 		let dbPromises = [];
 
-		allContactData.forEach((contactData) => {
-
-			const {name, email, phone, type} = contactData;
-
+		allContactData.forEach(contactData => {
+			const { name, email, phone, type } = contactData;
 			const currentContact = new Contact({
 				name,
 				email,
 				phone,
 				type,
-				user: id
+				user: id,
 			});
 			dbPromises.push(currentContact.save());
-			
 		});
 		await Promise.all(dbPromises);
 		return dbPromises;
 	},
 
-	getAllContacts: async (userId) => {
+	getAllContacts: async userId => {
 		try {
-			
-			const contacts = await Contact.find({user: userId}).sort({date: -1});
+			const contacts = await Contact.find({ user: userId }).sort({
+				date: -1,
+			});
 			return contacts;
 		} catch (error) {
 			console.error(error);
@@ -127,5 +121,5 @@ module.exports = {
 			console.error(error);
 			throw error;
 		}
-	}
+	},
 };
