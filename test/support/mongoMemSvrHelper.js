@@ -4,7 +4,6 @@ const User = require('../../models/User');
 const Contact = require('../../models/Contact');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const config = require('config');
 
 const opts = {
 	useNewUrlParser: true,
@@ -66,7 +65,9 @@ module.exports = {
 				},
 			};
 
-			const token = jwt.sign(payload, config.get('jwtSecret'), {
+			const secret = process.env.JWT_SECRET;
+
+			const token = jwt.sign(payload, secret, {
 				expiresIn: 3600,
 			});
 
