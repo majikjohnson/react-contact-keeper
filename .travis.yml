@@ -5,3 +5,7 @@ script:
   - "npm run client-install"
   - "npm test"
   - "npm run client-test"
+deploy:
+  - provider: heroku
+  - api_key: $HEROKU_API_KEY
+  - app: shrouded-river-59487
