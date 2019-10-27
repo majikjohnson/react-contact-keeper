@@ -10,6 +10,9 @@ const About = () => {
             <p className="my-1">
                 I have also build test infrastructure for Express and the React app.  See the repository on <a href="https://github.com/majikjohnson/react-contact-keeper">GitHub</a>
             </p>
+            <p className="my-1">
+                App is tested tested and deployed to Heroku via Travis CI, using full CI/CD pipeline.
+            </p>
             <p className="bg-dark p">
                 Version: 0.1.0
             </p>
