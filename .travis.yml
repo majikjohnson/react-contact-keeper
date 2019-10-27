@@ -2,6 +2,6 @@ language: node_js
 node_js:
   - 12
 script:
-  - "npm run client-install"
+  - "npm run clientinstall"
   - "npm test"
   - "npm run client-test"
