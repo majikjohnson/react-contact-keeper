@@ -9,7 +9,7 @@
     "test": "mocha --timeout 60000 --recursive",
     "client-test": "npm test --prefix client",
     "client": "npm start --prefix client",
-    "clientinstall": "npm install --prefix client",
+    "client-install": "npm install --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run-script build --prefix client"
   },
