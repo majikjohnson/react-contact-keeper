@@ -18,7 +18,7 @@ const Navbar = ({ title, icon }) => {
 
 	const authLinks = (
 		<Fragment>
-			<li>Hello {user && user.name.split(' ')[0]} | </li>
+			<li data-testid="user-greeting">Hello {user && user.name.split(' ')[0]} | </li>
 			<li>
 				<a href="#!" onClick={onLogout}>
 					<i className="fas fa-sign-out-alt" />
